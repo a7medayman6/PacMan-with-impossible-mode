@@ -1,0 +1,403 @@
+#include <iostream>
+#include <conio.h> //for getch() function
+#include <stdio.h> //special for printf() function
+#include <stdlib.h>
+#include <cstdlib> //for rand () function
+#include <ctime>
+#include <windows.h>
+
+#define ROW 22
+#define COL 42
+
+#define KEY_RIGHT 72
+#define KEY_LEFT 80
+#define KEY_UP 75
+#define KEY_DOWN 77
+using namespace std;
+
+///Declare Your Functions Here.
+/**
+void printgrid();
+void logic();
+void standards();
+void ghost();
+void ghost1();
+void ghost2();
+void ghost3();
+**/
+
+///Declare Your Global Variables Here.
+bool gameOver,winn;
+int pacX,pacY,prevpacX,prevpacY,ghostX,ghostY,ghost1X,ghost1Y,ghost2X,ghost2Y,ghost3X,ghost3Y,Score=0;
+int random;
+
+
+char grid1[ROW][COL] //for Easy
+=
+{
+"########################################",///124 '.'
+"#  .................................   #",
+"# .               .                 .  #",
+"# .   ########### .  ############   .  #",
+"# .   ##       ## .  ##        ##   .  #",
+"# .   ########### .  ############   .  #",
+"# . . . . . . . . . . . . . . . . . .  #",
+"# . .                               .  #",
+"# . .  ##########################   .  #",
+"# . .  ##                      ##   .  #",
+"# . .  ##                      ##   .  #",
+"# . .  ##                      ##   .  #",
+"# . .  ##########################   .  #",
+"# . .                               .  #",
+"# . .  ##### . . . . . . .  #####   .  #",
+"# . .  #   #                #   #   .  #",
+"# . .  #   ##################   #   .  #",
+"# . .  #                        #   .  #",
+"# . .  ##########################   .  #",
+"# . . . . . . . . . . . . . . . . . .  #", ///pacman at(18,40)
+"#                                      #",
+"########################################"};
+
+char grid2[ROW][COL]
+=
+{
+"########################################",
+"#  .................................   #",
+"# .               .                 .  #",
+"# .   ########### .  ############   .  #",
+"# .   ##       ## .  ##        ##   .  #",
+"# .   ########### .  ############   .  #",
+"# . . . . . . . . . . . . . . . . . .  #",
+"# . .                               .  #",
+"# . .  ##########################   .  #",
+"# . .  ##                      ##   .  #",
+"# . .  ##                      ##   .  #",
+"# . .  ##                      ##   .  #",
+"# . .  ##########################   .  #",
+"# . .                               .  #",
+"# . .  ##### . . . . . . .  #####   .  #",
+"# . .  #   #                #   #   .  #",
+"# . .  #   ##################   #   .  #",
+"# . .  #                        #   .  #",
+"# . .  ##########################   .  #",
+"# . . . . . . . . . . . . . . . . . .  #", ///pacman at(18,40)
+"#                                      #",
+"########################################"};
+
+char grid3[ROW][COL]
+=
+{
+"########################################",
+"#  .................................   #",
+"# .               .                 .  #",
+"# .   ########### .  ############   .  #",
+"# .   ##       ## .  ##        ##   .  #",
+"# .   ########### .  ############   .  #",
+"# . . . . . . . . . . . . . . . . . .  #",
+"# . .                               .  #",
+"# . .  ##########################   .  #",
+"# . .  ##                      ##   .  #",
+"# . .  ##                      ##   .  #",
+"# . .  ##                      ##   .  #",
+"# . .  ##########################   .  #",
+"# . .                               .  #",
+"# . .  ##### . . . . . . .  #####   .  #",
+"# . .  #   #                #   #   .  #",
+"# . .  #   ##################   #   .  #",
+"# . .  #                        #   .  #",
+"# . .  ##########################   .  #",
+"# . . . . . . . . . . . . . . . . . .  #", ///pacman at(18,40)
+"#                                      #",
+"########################################"};
+
+
+
+
+void standards()
+{
+    gameOver=false;
+    winn=false;
+    pacX=19;
+    pacY=20;
+    prevpacX=-1;
+    prevpacY=-1;
+    Score=0;
+    ghostX=1;
+    ghostY=1;
+    ghost1X=1;
+    ghost1Y=36;
+    ghost2X=12;
+    ghost2Y=6;
+    ghost3X=12;
+    ghost3Y=32;
+}
+
+void printgrid(char grid[22][42]) //function for Easy grid
+{
+       system("cls");
+        for(int i=0 ; i<ROW ; i++)
+        {
+            for (int j=0; j<COL; j++)
+            {
+
+                if (grid[prevpacX][prevpacY]=='.' && prevpacX==i && prevpacY==j)
+                {
+                    grid[i][j]= ' ';
+                }
+                if (pacX==i && pacY==j)
+                    cout << 'X';
+                else if (ghostX==i && ghostY==j)
+                {
+                        cout<<'@';
+                }
+                else if (ghost1X==i && ghost1Y==j)
+                {
+                        cout<<'@';
+                }
+                else if (ghost2X==i && ghost2Y==j)
+                {
+                        cout<<'@';
+                }
+                else if (ghost3X==i && ghost3Y==j)
+                {
+                        cout<<'@';
+                }
+
+                else
+                    cout << grid[i][j];
+
+            }
+            cout <<endl;
+        }
+    cout << "Score : " << Score <<endl;
+
+};
+
+void ghost(char grid [22][42],int& xGhost, int& yGhost, int num )
+{
+    bool Wall=true;
+
+        if (num==0)
+        {
+             srand(time(0));
+             random=rand()%4;
+        }
+        else if (num==1)
+        {
+             srand(1+time(0));
+             random=rand()%4;
+        }
+        else if (num==2)
+        {
+             srand(2+time(0));
+             random=rand()%4;
+        }
+        else if (num==3)
+        {
+             srand(3+time(0));
+             random=rand()%4;
+        }
+     if (random == 0)
+		{
+			if(grid[xGhost + 1][yGhost] != '#' && grid[xGhost + 1][yGhost] != '@')
+			 {
+		     	 xGhost++;
+		    	  Wall = false;
+			 }
+		}
+
+		else if (random==1)
+		{
+
+			if (grid[xGhost - 1][yGhost] != '#' && grid[xGhost - 1][yGhost] != '@')
+			{
+				xGhost--;
+				Wall = false;
+			}
+		}
+		else if (random==2)
+		{
+			if (grid[xGhost][yGhost + 1] != '#' && grid[xGhost][yGhost + 1] != '@')
+			{
+				yGhost++;
+				Wall = false;
+			}
+		}
+		else if (random==3)
+		{
+			if(grid[xGhost][yGhost - 1] != '#' && grid[xGhost][yGhost - 1] != '@')
+			{
+				yGhost--;
+				Wall = false;
+			}
+		}
+
+
+
+}
+
+
+
+
+void logic(char grid [22][42])
+{
+        ghost(grid,ghostX,ghostY,0);
+        ghost(grid,ghost1X,ghost1Y,3);
+        ghost(grid,ghost2X,ghost2Y,2);
+        ghost(grid,ghost3X,ghost3Y,4);
+    if (pacX == ghostX && pacY == ghostY || pacX == ghost1X && pacY == ghost1Y ||
+        pacX == ghost2X && pacY == ghost2Y || pacX == ghost3X && pacY == ghost3Y)
+    {
+        gameOver=true;
+
+    }
+    else
+    {
+
+
+    if (kbhit())
+    {
+
+
+        switch((_getch())) {
+        case KEY_RIGHT:
+            if (grid[pacX-1][pacY]!='#')
+            {
+                pacX--;
+                if(grid[pacX-1][pacY]=='.')
+                        Score++;
+            }
+
+            break;
+        case KEY_LEFT:
+            if (grid[pacX+1][pacY]!='#')
+               {
+                   pacX++;
+                   if(grid[pacX+1][pacY]=='.')
+                        Score++;
+               }
+
+            break;
+        case KEY_UP:
+            if (grid[pacX][pacY-1]!='#')
+            {
+
+                pacY--;
+                if(grid[pacX][pacY-1]=='.')
+                        Score++;
+            }
+            break;
+        case KEY_DOWN:
+            if (grid[pacX][pacY+1]!='#')
+            {
+                pacY++;
+                 if(grid[pacX][pacY+1]=='.')
+                        Score++;
+            }
+            break;
+        default:
+
+            break;
+        }
+    }
+        prevpacX=pacX;
+        prevpacY=pacY;
+    }
+    /*     if (pacX == ghostX && pacY == ghostY || pacX == ghost1X && pacY == ghost1Y ||
+        pacX == ghost2X && pacY == ghost2Y || pacX == ghost3X && pacY == ghost3Y)
+    {
+        gameOver=true;
+
+    }*/
+
+
+}
+
+int main()
+{
+    int level;
+    standards();
+    cout<<"\t\t\t\tPAC MAN\n\n";
+    cout << " please choose a level :\n\n\t\t\t 1-Easy 2-Medium 3-hard " << endl;
+    cin >> level;
+    if (level == 1)
+    {
+        if (Score==116)
+        {
+            winn=true;
+        }
+        while(!gameOver)
+            {
+                printgrid(grid1);
+                logic(grid1);
+                if (winn)
+                {
+                    break;
+                }
+                Sleep(200);
+
+            }
+            system("cls");
+            if (winn)
+            {
+                system("cls");
+                cout<<"\n\t You Won \n" << "Your Score Is : " << Score <<endl;
+            }
+
+            else if (gameOver)
+            {
+                system("cls");
+                cout<<"\n\tGAME OVER\n"<<endl;
+            }
+
+    }
+
+    else if(level == 2)
+    {
+        while(!gameOver)
+            {
+                printgrid(grid2);
+                logic(grid2);
+                Sleep(200);
+            }
+            system("cls");
+             if (winn)
+            {
+                system("cls");
+                cout<<"\n\t You Won \n" << "Your Score Is : " << Score <<endl;
+            }
+
+            else if (gameOver)
+            {
+                system("cls");
+                cout<<"\n\tGAME OVER\n"<<endl;
+            }
+    }
+
+    else if (level == 3)
+    {
+         while(!gameOver)
+            {
+                printgrid(grid3);
+                logic(grid3);
+                Sleep(200);
+            }
+            system("cls");
+            if (winn)
+            {
+                system("cls");
+                cout<<"\n\t You Won \n" << "Your Score Is : " << Score <<endl;
+            }
+
+            else if (gameOver)
+            {
+                system("cls");
+                cout<<"\n\tGAME OVER\n"<<endl;
+            }
+    }
+
+
+
+    system("pause");
+    return 0;
+}

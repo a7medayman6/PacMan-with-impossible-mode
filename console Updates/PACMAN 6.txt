@@ -1,0 +1,693 @@
+#include <iostream>
+#include <conio.h> //for getch() function
+#include <stdio.h> //special for printf() function
+#include <stdlib.h>
+#include <cstdlib> //for rand () function
+#include <ctime>
+
+#define ROW1 22
+#define COL1 42
+#define ROW2 25
+#define COL2 80
+#define ROW3 25
+#define COL3 72
+#define KEY_RIGHT 72
+#define KEY_LEFT 80
+#define KEY_UP 75
+#define KEY_DOWN 77
+using namespace std;
+
+///Declare Your Functions Here.
+void printgrid1();
+void printgrid2();
+void printgrid3();
+void logic();
+void logic2();
+void logic3();
+void standards();
+void ghost();
+void ghost1();
+void ghost2();
+void ghost3();
+
+///Declare Your Global Variables Here.
+bool gameOver;
+enum dirictions {stop=0, Left, Right, Up, Down};
+    dirictions pacDir;
+int pacX,pacY,prevpacX,prevpacY,ghostX,ghostY,ghost1X,ghost1Y,ghost2X,ghost2Y,ghost3X,ghost3Y,Score=0;
+int random;
+char grid1[ROW1][COL1] //for Easy
+=
+{
+"########################################",
+"#  .................................   #",
+"# .               .                 .  #",
+"# .   ########### .  ############   .  #",
+"# .   ##       ## .  ##        ##   .  #",
+"# .   ########### .  ############   .  #",
+"# . . . . . . . . . . . . . . . . . .  #",
+"# . .                               .  #",
+"# . .  ##########################   .  #",
+"# . .  ##                      ##   .  #",
+"# . .  ##                      ##   .  #",
+"# . .  ##                      ##   .  #",
+"# . .  ##########################   .  #",
+"# . .                               .  #",
+"# . .  ##### . . . . . . .  #####   .  #",
+"# . .  #   #                #   #   .  #",
+"# . .  #   ##################   #   .  #",
+"# . .  #                        #   .  #",
+"# . .  ##########################   .  #",
+"# . . . . . . . . . . . . . . . . . .  #", ///pacman at(18,40)
+"#                                      #",
+"########################################"};
+
+char grid2[ROW2][COL2] //for Medium
+
+= {
+"##########################################################",
+"#                           ##                           #",
+"#  #####    ############    ##    ############    #####  #",
+"#  #   #    #          #    ##    #          #    #   #  #",
+"#  #####    ############    ##    ############    #####  #",
+"#                                                        #",
+"########  ##        ##################        ##  ########",
+"#      #  ##                ##                ##  #      #",
+"#      #  ######            ##            ######  #      #",
+"########  ######            ##            ######  ########",
+"#                                                        #",
+"########  ######   ####################   ######  ########",
+"#      #  ######   #                  #   ######  #      #",
+"#      #  ##       #                  #       ##  #      #",
+"########  ##       ####################       ##  ########",
+"#                                                        #",
+"#                  ###################                   #",
+"#                           ##                           #",
+"#         ###############   ##   ###############         #",
+"#####                                                #####",
+"#####     ##       ####################       ##     #####",
+"#         ##                ##                ##         #",
+"#  #########                ##                #########  #",
+"#                                                        #",
+"##########################################################",
+};
+char grid3[ROW3][COL3] //for Hard
+= {
+	"######################################################################",
+	"#          .. . .  .  .  .  .  .  . .  ##    .  .  .  .  .  .  .  .  #",
+	"# .  #  .  .                        .  ##    .                       #",
+	"# .  #  .  .    ##################  .  ##    .   #####################",
+	"# .  #  .. . . .   .  ##  . . . . . .  ##    .  .  .  .  .  .  .  .  #",
+	"# .  #  ..  #  .   .  ##  . .       .  ##       .            .  # .  #",
+	"# .  #   .  #  .   .  ##  . .   #   . . . . .   .  ######### .  # .  #",
+	"# .  ### .  #  .   .  ##  . .   #           .   .  #  .. . . .  # .  #",
+	"# .      .  #  .   .  ##  .   ############  . . .  #  ..        # .  #",
+	"# .. . . .  #  . . . . . .. . .          #         #  ..  ####### .  #",
+	"#           #                 . . . . .  ###########  .. . . .  # .  #",
+	"#  .  ######################  .          #  . .   . . .. .  .   # .  #",
+	"#  .  #   . . . .    #        . .  #######  .   ##########  .   # .  #",
+	"#  .  #   .     .    #  . . . . .        #  . .     # .  .  .   # .  #",
+	"#  .  #   .  #  .    #  .                #  . . .   # .  .  .   # .  #",
+	"#  .  #   .  #  .    #  .  ###############  . . .   # .           .  #",
+	"#  .  #   .  #  .    #  .           #    .  . . .   ############  .  #",
+	"#  .  #   .  #  . .  #  . . . . .   #    .  . . . . .  #  . . . . .  #",
+	"#  .  #   .  #              . . .   #    .  . . .      #          .  #",
+	"#  .  #   .  ######  #######        #           .  #############  .  #",
+	"#  .  #   .  #              . ################  .  # .     .   #  .  #",
+	"#  . . .  . . . . . . . . . . . . . . . . . . . .  # .  #  .   #  .  #",
+	"#                                                       #            #",
+	"######################################################################"
+};
+
+
+void standards()
+{
+    gameOver=false;
+    pacX=19;
+    pacY=20;
+    prevpacX=-1;
+    prevpacY=-1;
+    Score=0;
+    ghostX=1;
+    ghostY=1;
+    ghost1X=1;
+    ghost1Y=36;
+    ghost2X=12;
+    ghost2Y=6;
+    ghost3X=12;
+    ghost3Y=32;
+}
+
+void printgrid1() //function for Easy grid
+{
+       system("cls");
+        for(int i=0 ; i<ROW1 ; i++)
+        {
+            for (int j=0; j<COL1; j++)
+            {
+                if (pacX==i && pacY==j)
+                    cout << 'X';
+                else if (ghostX==i && ghostY==j)
+                {
+                        cout<<'@';
+                }
+                else if (ghost1X==i && ghost1Y==j)
+                {
+                        cout<<'@';
+                }
+                else if (ghost2X==i && ghost2Y==j)
+                {
+                        cout<<'@';
+                }
+                else if (ghost3X==i && ghost3Y==j)
+                {
+                        cout<<'@';
+                }
+
+                else
+                    cout << grid1[i][j];
+                if (grid1[prevpacX][prevpacY]=='.' && prevpacX==i && prevpacY==j)
+                {
+                    cout << ' ';
+                    grid1[i][j]=' ';
+                }
+            }
+            cout <<endl;
+        }
+    cout << "Score : " << Score ;
+
+};
+void printgrid2() //function for medium grid
+{
+     system("cls");
+        for(int i=0 ; i<ROW2 ; i++)
+        {
+            for (int j=0; j<COL2; j++)
+            {
+                if (pacX==i && pacY==j)
+                    cout << 'X';
+                else if (ghostX==i && ghostY==j)
+                {
+                        cout<<'@';
+                }
+                 else if (ghost1X==i && ghost1Y==j)
+                {
+                        cout<<'@';
+                }
+                else if (ghost2X==i && ghost2Y==j)
+                {
+                        cout<<'@';
+                }
+                else if (ghost3X==i && ghost3Y==j)
+                {
+                        cout<<'@';
+                }
+                else
+                    cout << grid2[i][j];
+                if (grid2[prevpacX][prevpacY]=='.' && prevpacX==i && prevpacY==j)
+                {
+                    cout << ' ';
+                    grid2[i][j]=' ';
+                }
+            }
+            cout <<endl;
+        }
+    cout << "Score : " << Score ;
+};
+void printgrid3() //function for Hard grid
+{
+     system("cls");
+        for(int i=0 ; i<ROW3 ; i++)
+        {
+            for (int j=0; j<COL3; j++)
+            {
+                if (pacX==i && pacY==j)
+                    cout << 'X';
+                else if (ghostX==i && ghostY==j)
+                {
+                        cout<<'@';
+                }
+                 else if (ghost1X==i && ghost1Y==j)
+                {
+                        cout<<'@';
+                }
+                else if (ghost2X==i && ghost2Y==j)
+                {
+                        cout<<'@';
+                }
+                else if (ghost3X==i && ghost3Y==j)
+                {
+                        cout<<'@';
+                }
+                else
+                    cout << grid3[i][j];
+                if (grid3[prevpacX][prevpacY]=='.' && prevpacX==i && prevpacY==j)
+                {
+                    cout << ' ';
+                    grid3[i][j]=' ';
+                }
+            }
+            cout <<endl;
+        }
+     cout << "Score : " << Score ;
+};
+////////////////////////////////////////////////////////////////////////
+void ghost()
+{
+    bool Wall=true;
+    do
+    {
+      srand(time(0));
+     random=rand()%4;
+     if (random == 0)
+		{
+			if(grid1[ghostX + 1][ghostY] != '#'&& grid2[ghostX + 1][ghostY] != '#'&& grid3[ghostX + 1][ghostY] != '#')
+			 {
+		     	 ghostX++;
+		    	  Wall = false;
+			 }
+		}
+
+		else if (random==1)
+		{
+
+			if (grid1[ghostX - 1][ghostY] != '#' && grid2[ghostX - 1][ghostY] != '#' && grid3[ghostX - 1][ghostY] != '#')
+			{
+				ghostX--;
+				Wall = false;
+			}
+		}
+		else if (random==2)
+		{
+			if (grid1[ghostX][ghostY + 1] != '#' && grid2[ghostX - 1][ghostY] != '#' && grid3[ghostX - 1][ghostY] != '#')
+			{
+				ghostY++;
+				Wall = false;
+			}
+		}
+		else if (random==3)
+		{
+			if(grid1[ghostX][ghostY - 1] != '#' && grid2[ghostX][ghostY - 1] != '#' && grid3[ghostX][ghostY - 1] != '#')
+			{
+				ghostY--;
+				Wall = false;
+			}
+		}
+
+	} while (Wall);
+
+}
+
+
+/////////////////////////////////////////////////////////////
+void ghost1()
+{
+    bool Wall=true;
+    do
+    {
+      srand(1+time(0));
+     random=rand()%4;
+    if (random == 0)
+		{
+			if(grid1[ghost1X + 1][ghost1Y] != '#'&& grid2[ghost1X + 1][ghost1Y] != '#'&& grid3[ghost1X + 1][ghost1Y] != '#')
+			 {
+			 ghost1X++;
+			  Wall = false;
+			 }
+		}
+
+		else if (random==1)
+		{
+
+			if (grid1[ghost1X - 1][ghost1Y] != '#' && grid2[ghost1X - 1][ghost1Y] != '#' && grid3[ghost1X - 1][ghost1Y] != '#')
+			{
+				ghost1X--;
+				Wall = false;
+			}
+		}
+		else if (random==2)
+		{
+			if (grid1[ghost1X][ghost1Y + 1] != '#' && grid2[ghost1X - 1][ghost1Y] != '#' && grid3[ghost1X - 1][ghost1Y] != '#')
+			{
+				ghost1Y++;
+				Wall = false;
+			}
+		}
+		else if (random==3)
+		{
+			if (grid1[ghost1X][ghost1Y - 1] != '#' && grid2[ghost1X][ghost1Y - 1] != '#' && grid3[ghost1X][ghost1Y - 1] != '#')
+			{
+				ghost1Y--;
+				Wall = false;
+			}
+		}
+
+	} while (Wall);
+
+}
+/////////////////////////////////////////////////////////
+void ghost2()
+{
+    bool Wall=true;
+    do
+    {
+      srand(2+time(0));
+     random=rand()%4;
+if (random == 0)
+		{
+			if(grid1[ghost2X + 1][ghost2Y] != '#'&& grid2[ghost2X + 1][ghost2Y] != '#'&& grid3[ghost2X + 1][ghost2Y] != '#')
+			 {
+			 ghost2X++;
+			  Wall = false;
+			 }
+		}
+
+		else if (random==1)
+		{
+
+			if (grid1[ghost2X - 1][ghost2Y] != '#' && grid2[ghost2X - 1][ghost2Y] != '#' && grid3[ghost2X - 1][ghost2Y] != '#')
+			{
+				ghost2X--;
+				Wall = false;
+			}
+		}
+		else if (random==2)
+		{
+			if (grid1[ghost2X][ghost2Y + 1] != '#' && grid2[ghost2X - 1][ghost2Y] != '#' && grid3[ghost2X - 1][ghost2Y] != '#')
+			{
+				ghost2Y++;
+				Wall = false;
+			}
+		}
+		else if (random==3)
+		{
+			if(grid1[ghost2X][ghost2Y - 1] != '#' && grid2[ghost2X][ghost2Y - 1] != '#' && grid3[ghost2X][ghost2Y - 1] != '#')
+			{
+				ghost2Y--;
+				Wall = false;
+			}
+		}
+
+	} while (Wall);
+
+}
+//////////////////////////////////////////////////////////////
+void ghost3()
+{
+    bool Wall=true;
+    do
+    {
+      srand(3+time(0));
+     random=rand()%4;
+    if (random == 0)
+		{
+			if(grid1[ghost3X + 1][ghost3Y] != '#' && grid2[ghost3X + 1][ghost3Y] != '#'&& grid3[ghost3X + 1][ghost3Y] != '#')
+                    {
+			         ghost3X++;
+			         Wall = false;
+                    }
+		}
+
+    else if (random==1)
+		{
+
+			if(grid1[ghost3X - 1][ghost3Y] != '#'&& grid2[ghost3X - 1][ghost3Y] != '#'&& grid3[ghost3X - 1][ghost3Y] != '#')
+			   {
+			       ghost3X--;
+			       Wall = false;
+			   }
+		}
+     	else if (random==2)
+		{
+			if(grid1[ghost3X][ghost3Y + 1] != '#'&& grid2[ghost3X - 1][ghost3Y] != '#'&& grid3[ghost3X - 1][ghost3Y] != '#')
+			{
+			    ghost3Y++;
+		     	Wall = false;
+			}
+		}
+   else if (random==3)
+		{
+			if(grid1[ghost3X][ghost3Y - 1] != '#'&& grid2[ghost3X][ghost3Y - 1] != '#'&& grid3[ghost3X][ghost3Y - 1] != '#')
+			{
+			    ghost3Y--;
+			    Wall = false;
+			}
+		}
+
+    }while(Wall);
+
+}
+////////////////////////////////////////////////////////////////
+void logic()
+{
+        ghost();
+        ghost1();
+        ghost2();
+        ghost3();
+    if (pacX == ghostX && pacY == ghostY || pacX == ghost1X && pacY == ghost1Y ||
+        pacX == ghost2X && pacY == ghost2Y || pacX == ghost3X && pacY == ghost3Y)
+    {
+        gameOver=true;
+
+    }
+        prevpacX=pacX;
+        prevpacY=pacY;
+    if (kbhit())
+    {
+
+
+        switch((_getch())) {
+        case KEY_RIGHT:
+            if (grid1[pacX-1][pacY]!='#')
+            {
+                pacX--;
+
+                if(grid1[pacX-1][pacY]=='.')
+                        Score++;
+            }
+
+            break;
+        case KEY_LEFT:
+            if (grid1[pacX+1][pacY]!='#')
+               {
+                   pacX++;
+                   if(grid1[pacX+1][pacY]=='.')
+                        Score++;
+               }
+
+            break;
+        case KEY_UP:
+            if (grid1[pacX][pacY-1]!='#')
+            {
+
+                pacY--;
+                if(grid1[pacX][pacY-1]=='.')
+                        Score++;
+            }
+            break;
+        case KEY_DOWN:
+            if (grid1[pacX][pacY+1]!='#')
+            {
+                pacY++;
+                 if(grid1[pacX][pacY+1]=='.')
+                        Score++;
+            }
+            break;
+        default:
+
+            break;
+        }
+    }
+         if (pacX == ghostX && pacY == ghostY || pacX == ghost1X && pacY == ghost1Y ||
+        pacX == ghost2X && pacY == ghost2Y || pacX == ghost3X && pacY == ghost3Y)
+    {
+        gameOver=true;
+
+    }
+
+
+}
+/////////////////////////////////////////////
+void logic2()
+{
+        ghost();
+        ghost1();
+        ghost2();
+        ghost3();
+        if (pacX == ghostX && pacY == ghostY || pacX == ghost1X && pacY == ghost1Y ||
+        pacX == ghost2X && pacY == ghost2Y || pacX == ghost3X && pacY == ghost3Y)
+    {
+        gameOver=true;
+
+    }
+        prevpacX=pacX;
+        prevpacY=pacY;
+
+     if (kbhit())
+     {
+        switch((getch())) {
+        case KEY_RIGHT:
+            if (grid2[pacX-1][pacY]!='#')
+            {
+                pacX--;
+                if(grid2[pacX-1][pacY]=='.')
+                        Score++;
+            }
+
+            break;
+        case KEY_LEFT:
+            if (grid2[pacX+1][pacY]!='#')
+               {
+                   pacX++;
+                   if(grid2[pacX+1][pacY]=='.')
+                        Score++;
+               }
+
+
+            break;
+        case KEY_UP:
+            if (grid2[pacX][pacY-1]!='#')
+            {
+
+                pacY--;
+                if(grid2[pacX][pacY-1]=='.')
+                        Score++;
+            }
+            break;
+        case KEY_DOWN:
+            if (grid2[pacX][pacY+1]!='#')
+            {
+                pacY++;
+                 if(grid2[pacX][pacY+1]=='.')
+                        Score++;
+            }
+            break;
+        default:
+
+            break;
+        }
+     }
+
+if (pacX == ghostX && pacY == ghostY || pacX == ghost1X && pacY == ghost1Y ||
+        pacX == ghost2X && pacY == ghost2Y || pacX == ghost3X && pacY == ghost3Y)
+    {
+        gameOver=true;
+
+    }
+}
+/////////////////////////////////////////////////
+void logic3()
+{
+        ghost();
+        ghost1();
+        ghost2();
+        ghost3();
+        if (pacX == ghostX && pacY == ghostY || pacX == ghost1X && pacY == ghost1Y ||
+        pacX == ghost2X && pacY == ghost2Y || pacX == ghost3X && pacY == ghost3Y)
+    {
+        gameOver=true;
+
+    }
+        prevpacX=pacX;
+        prevpacY=pacY;
+    if (kbhit())
+    {
+        switch((getch())) {
+        case KEY_RIGHT:
+            if (grid3[pacX-1][pacY]!='#')
+            {
+                pacX--;
+                if(grid3[pacX-1][pacY]=='.')
+                        Score++;
+            }
+
+            break;
+        case KEY_LEFT:
+            if (grid3[pacX+1][pacY]!='#')
+               {
+                   pacX++;
+                   if(grid3[pacX+1][pacY]=='.')
+                        Score++;
+               }
+
+            break;
+        case KEY_UP:
+            if (grid3[pacX][pacY-1]!='#')
+            {
+
+                pacY--;
+                if(grid3[pacX][pacY-1]=='.')
+                        Score++;
+            }
+            break;
+        case KEY_DOWN:
+            if (grid3[pacX][pacY+1]!='#')
+            {
+                pacY++;
+                 if(grid3[pacX][pacY+1]=='.')
+                        Score++;
+            }
+            break;
+        default:
+
+            break;
+        }
+    }
+   if (pacX == ghostX && pacY == ghostY || pacX == ghost1X && pacY == ghost1Y ||
+        pacX == ghost2X && pacY == ghost2Y || pacX == ghost3X && pacY == ghost3Y)
+    {
+        gameOver=true;
+
+    }
+
+}
+
+int main()
+{
+    int level;
+    standards();
+    cout<<"\t\t\t\tPAC MAN\n\n";
+    cout << " please choose a level :\n\n\t\t\t 1-Easy 2-Medium 3-hard " << endl;
+    cin >> level;
+    if (level == 1)
+    {
+        while(!gameOver)
+            {
+                printgrid1();
+                cout<<endl;
+                logic();
+            }
+            system("cls");
+            cout<<"\n\tGAME OVER\n"<<endl;
+
+
+       // cout << "You Lost, Try Again" <<endl;
+
+    }
+    else if(level == 2)
+    {
+        while(!gameOver)
+            {
+                printgrid2();
+                cout<<endl;
+                logic2();
+            }
+            system("cls");
+            cout<<"\n\tGAME OVER\n"<<endl;
+    }
+    else
+    {
+         while(!gameOver)
+            {
+                printgrid3();
+                cout<<endl;
+                logic3();
+            }
+            system("cls");
+            cout<<"\n\tGAME OVER\n"<<endl;
+    }
+
+
+     system("pause");
+    return 0;
+}
