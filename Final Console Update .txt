@@ -1,0 +1,620 @@
+#include <iostream>
+#include <conio.h> //for getch() function
+#include <stdio.h> //special for printf() function
+#include <stdlib.h>
+#include <cstdlib> //for rand () function
+#include <ctime>
+#include <windows.h>
+#include <queue>
+#include <string>
+
+#define ROW 22
+#define COL 42
+
+#define KEY_RIGHT 72
+#define KEY_LEFT 80
+#define KEY_UP 75
+#define KEY_DOWN 77
+using namespace std;
+
+///Declare Your Functions Here.
+/**
+void printgrid();
+void logic();
+void standards();
+void ghost();
+void ghost1();
+void ghost2();
+void ghost3();
+**/
+void move_pacman(char grid[ROW][COL]);
+
+///Declare Your Global Variables Here.
+bool gameOver, winn;
+int pacX, pacY, prevpacX, prevpacY, ghostX, ghostY, ghost1X, ghost1Y, ghost2X, ghost2Y, ghost3X, ghost3Y, Score = 0;
+int random;
+bool  level2 = false, level3 = false;
+int lives = 5;
+char key, character;
+///BFS Variables
+queue <int> Rqueue, Cqueue;
+bool visitedArray[22][42], reached_end=false;
+int dr[4] = { -1, 1, 0, 0 };
+int dc[4] = { 0, 0, 1, -1 };
+char dir[4] = { 'u', 'd', 'r', 'l' };
+int r, c, rr, cc,xr,xc;
+
+
+char grid1[ROW][COL] //for Easy
+=
+{
+	"########################################",
+	"#  .................................   #",
+	"# .               .                 .  #",
+	"# .   ########### .  ############   .  #",
+	"# .   ##       ## .  ##        ##   .  #",
+	"# .   ########### .  ############   .  #",
+	"# . . . . . . . . . . . . . . . . . .  #",
+	"# . .                               .  #",
+	"# . .  ##########################   .  #",
+	"# . .  ##                      ##   .  #",
+	"# . .  ##                      ##   .  #",
+	"# . .  ##                      ##   .  #",
+	"# . .  ##########################   .  #",
+	"# . .                               .  #",
+	"# . .  ##### . . . . . . .  #####   .  #",
+	"# . .  #   #                #   #   .  #",
+	"# . .  #   ##################   #   .  #",
+	"# . .  #                        #   .  #",
+	"# . .  ##########################   .  #",
+	"# . . . . . . . . . . . . . . . . . .  #", ///pacman at(18,40)
+	"#                                      #",
+	"########################################" };
+
+char grid2[ROW][COL]//for level(2)
+=
+{
+	"########################################",
+	"# . . . . . . . . . . . . . . . . . .  #",
+	"# . . . . . . . . . . . . . . . . . .  #",
+	"###### . ####### .    . ####### . ######",
+	"####   .     ### .    . ###     .   ####",
+	"###### . ####### .    . ####### . ######",
+	"# . . . . . . . . . . . . . . . .  . . #",
+	"# . . . . . . . . . . . . . . . .  . . #",
+	"# . .  ##########################  . . #",
+	"# . .  ##########################  . . #",
+	"# . . . . . . . . . . . . .  . . . . . #",
+	"# . .  ##########################  . . #",
+	"# . .  ##########################  . . #",
+	"# . . . . . . . . . . . . .  . . . . . #",
+	"# . . . . . . . . . . . . .  . . . . . #",
+	"# . .  .                        .  . . #",
+	"###### . ####### .    . ####### . ######",
+	"####   .     ### .    . ###     .   ####",
+	"###### . ####### .    . ####### . ######",
+	"# . . . . . . . . . . . . . . . . . .  #", ///pacman at(18,40)
+	"# . . . . . . . . . . . . . . . . . .  #",
+	"########################################" };
+
+char grid3[ROW][COL]//for level(3)
+=
+{
+	"########################################",//194(dots)
+	"# . . . . . . . . . . . . . . . . . .  #",
+	"# . . . . . ###### . .######. . . . .  #",
+	"###### . ####### .    . ####### . ######",
+	"####   .     ##### .  #####     .   ####",
+	"###### . ####### .    . ####### . ######",
+	"# . . . . ..######  . ######  . .  . . #",
+	"# . . . . . . . . . . . . . . . .  . . #",
+	"# . .  ###########    ###########  . . #",
+	"# . .  ###########    ###########  . . #",
+	"# . . . . . . . . . . . . .  . . . . . #",
+	"# . .  ###########    ###########  . . #",
+	"# . .  ###########    ###########  . . #",
+	"# . . . . . . . .#.  .# .  .  . .  . . #",
+	"# . . . . . . . .#.  .#. . .  . .  . . #",
+	"# . .  .         #    #         .  . . #",
+	"###### .   #######    #######   . ######",
+	"####   . . . ### .    . ### . . .   ####",
+	"###### . ####### .    . ####### . ######",
+	"# . . . . . . . . . . . . . . . . . .  #", ///pacman at(18,40)
+	"# . . . . . . . . . . . . . . . . . .  #",
+	"########################################" };
+
+
+
+
+struct structForThePath
+{
+	string path;
+	string path2;
+	string path3;
+	string path4;
+}nodePath[ROW][COL];
+
+void standards()
+{
+	gameOver = false;
+	winn = false;
+	pacX = 19;
+	pacY = 20;
+	prevpacX = -1;
+	prevpacY = -1;
+	Score = 0;
+	ghostX = 1;
+	ghostY = 1;
+	ghost1X = 1;
+	ghost1Y = 28;
+	ghost2X = 7;
+	ghost2Y = 1;
+	ghost3X = 7;
+	ghost3Y = 28;
+}
+
+void printgrid(char grid[ROW][COL]) //function for Easy grid
+{
+	system("cls");
+	for (int i = 0; i<ROW; i++)
+	{
+		for (int j = 0; j<COL; j++)
+		{
+
+			visitedArray[i][j] = false; ///BFS Search
+
+
+			if (grid[prevpacX][prevpacY] == '.' && prevpacX == i && prevpacY == j)
+			{
+				grid[i][j] = ' ';
+			}
+			if (pacX == i && pacY == j)
+				cout << 'X';
+			else if (ghostX == i && ghostY == j)
+			{
+				cout << '@';
+			}
+			else if (ghost1X == i && ghost1Y == j)
+			{
+				cout << '@';
+			}
+			else if (ghost2X == i && ghost2Y == j)
+			{
+				cout << '@';
+			}
+			else if (ghost3X == i && ghost3Y == j)
+			{
+				cout << '@';
+			}
+
+			else
+			{
+				cout << grid[i][j];
+			}
+
+
+		}
+		cout << endl;
+	}
+	cout << "Score : " << Score << endl;
+	cout << "Lives : " << lives << endl;
+	cout << nodePath[pacX][pacY].path << endl;
+};
+
+bool  explore_neighbours(int ro, int co, int rTarget, int cTarget, char grid[][42], int ghostnum)
+{
+	for (int i = 0; i<4; i++)
+	{
+		rr = ro + dr[i];
+		cc = co + dc[i];
+		if (rr < 0 || cc < 0) continue;
+		else if (rr >= 22 || cc >= 42) continue;
+		else if (visitedArray[rr][cc] == true) continue;
+		else if (grid[rr][cc] == '#') continue;
+		Rqueue.push(rr);
+		Cqueue.push(cc);
+		visitedArray[rr][cc] = true;
+		if (ghostnum==1)
+            nodePath[rr][cc].path = nodePath[ro][co].path + dir[i];
+        else if (ghostnum==2)
+            nodePath[rr][cc].path2 = nodePath[ro][co].path2 + dir[i];
+        else if (ghostnum==3)
+            nodePath[rr][cc].path3 = nodePath[ro][co].path3 + dir[i];
+        else if (ghostnum==4)
+            nodePath[rr][cc].path4 = nodePath[ro][co].path4 + dir[i];
+		// cout << rr << " " << cc << "  =" <<  nodePath[rr][cc].path <<endl;
+
+		if (r==rTarget && c==cTarget)
+		{
+			xr = rr;
+			xc = cc;
+			return true;
+		}
+	}
+	return false;
+}
+
+int solve(int srr, int scc, int rTarget, int cTarget, char grid[][42], int ghostnum)
+{
+	Rqueue.push(srr);
+	Cqueue.push(scc);
+	visitedArray[srr][scc] = true;
+
+	while (Rqueue.size() > 0)
+	{
+		r = Rqueue.front();
+		c = Cqueue.front();
+		Rqueue.pop();
+		Cqueue.pop();
+
+		if (r==rTarget && c==cTarget)
+		{
+			reached_end = true;
+			xr = r;
+			xc = c;
+
+			break;
+		}
+
+		bool found = explore_neighbours(r, c, rTarget, cTarget, grid, ghostnum);
+
+		if (found)
+		{
+			return 0;
+
+		}
+	}
+
+	if (reached_end)
+		return 0;
+	return -1;
+}
+
+void ghost1(char grid[ROW][COL], int& xGhost, int& yGhost)
+{
+
+	solve(xGhost, yGhost, pacY, pacX, grid,1);
+
+	for (int i = 0; i < nodePath[pacX][pacY].path.length(); i++)
+	{
+
+        if (_kbhit())
+        {
+            move_pacman(grid);
+            break;
+        }
+		if (nodePath[pacX][pacY].path[i] == 'u')
+		{
+			ghostX--;
+			printgrid(grid);
+			Sleep(200);
+		}
+		else if (nodePath[pacX][pacY].path[i] == 'd')
+		{
+			ghostX++;
+			printgrid(grid);
+            Sleep(200);
+		}
+		else if (nodePath[pacX][pacY].path[i] == 'r')
+		{
+			ghostY++;
+			printgrid(grid);
+			Sleep(200);
+		}
+		else if (nodePath[pacX][pacY].path[i] == 'l')
+		{
+			ghostY--;
+			printgrid(grid);
+            Sleep(200);
+		}
+
+		///ghost2 moving
+		solve(ghost1X,ghost1Y,pacY+1,pacX,grid,2);
+		 if (_kbhit())
+        {
+            move_pacman(grid);
+            break;
+        }
+		if (nodePath[pacX][pacY+3].path2[i] == 'u')
+		{
+			ghost1X--;
+			printgrid(grid);
+			Sleep(200);
+		}
+		else if (nodePath[pacX][pacY+3].path2[i] == 'd')
+		{
+			ghost1X++;
+			printgrid(grid);
+            Sleep(200);
+		}
+		else if (nodePath[pacX][pacY+3].path2[i] == 'r')
+		{
+			ghost1Y++;
+			printgrid(grid);
+			Sleep(200);
+		}
+		else if (nodePath[pacX][pacY+3].path2[i] == 'l')
+		{
+			ghost1Y--;
+			printgrid(grid);
+            Sleep(200);
+		}
+	}
+
+}
+void ghost(char grid[ROW][COL], int& xGhost, int& yGhost, int num)
+{
+
+
+
+	srand(num + time(0));
+	random = rand() % 4;
+
+
+	if (random == 0)
+	{
+		if (grid[xGhost + 1][yGhost] != '#' && grid[xGhost + 1][yGhost] != '@')
+		{
+			xGhost++;
+			// Wall = false;
+		}
+	}
+
+	else if (random == 1)
+	{
+
+		if (grid[xGhost - 1][yGhost] != '#' && grid[xGhost - 1][yGhost] != '@')
+		{
+			xGhost--;
+			// Wall = false;
+		}
+	}
+	else if (random == 2)
+	{
+		if (grid[xGhost][yGhost + 1] != '#' && grid[xGhost][yGhost + 1] != '@')
+		{
+			yGhost++;
+			// Wall = false;
+		}
+	}
+	else if (random == 3)
+	{
+		if (grid[xGhost][yGhost - 1] != '#' && grid[xGhost][yGhost - 1] != '@')
+		{
+			yGhost--;
+			// Wall = false;
+		}
+	}
+
+
+
+}
+void move_pacman(char grid[ROW][COL])
+{
+
+    for (int i=0; i<ROW; i++)
+    {
+        for (int j=0; j<COL; j++)
+        {
+            nodePath[i][j].path.clear();
+            nodePath[i][j].path2.clear();
+
+        }
+    }
+			switch ((_getch())) {
+			case KEY_RIGHT:
+				if (grid[pacX - 1][pacY] != '#')
+				{
+					pacX--;
+					if (grid[pacX - 1][pacY] == '.')
+						Score++;
+				}
+
+				break;
+			case KEY_LEFT:
+				if (grid[pacX + 1][pacY] != '#')
+				{
+					pacX++;
+					if (grid[pacX + 1][pacY] == '.')
+						Score++;
+				}
+
+				break;
+			case KEY_UP:
+				if (grid[pacX][pacY - 1] != '#')
+				{
+
+					pacY--;
+					if (grid[pacX][pacY - 1] == '.')
+						Score++;
+				}
+				break;
+			case KEY_DOWN:
+				if (grid[pacX][pacY + 1] != '#')
+				{
+					pacY++;
+					if (grid[pacX][pacY + 1] == '.')
+						Score++;
+				}
+				break;
+			default:
+
+				break;
+			}
+
+}
+
+
+int  logic(char grid[ROW][COL])
+{
+	ghost1(grid, ghostX, ghostY);
+	//ghost(grid, ghost1X, ghost1Y, 1);
+	ghost(grid, ghost2X, ghost2Y, 2);
+	ghost(grid, ghost3X, ghost3Y, 3);
+	if (pacX == ghostX && pacY == ghostY || pacX == ghost1X && pacY == ghost1Y ||
+		pacX == ghost2X && pacY == ghost2Y || pacX == ghost3X && pacY == ghost3Y)
+	{
+		gameOver = true;
+		return 0;
+	}
+	else
+	{
+		prevpacX = pacX;
+		prevpacY = pacY;
+
+
+		if (_kbhit())
+		{
+            move_pacman(grid);
+		}
+	}
+	if (pacX == ghostX && pacY == ghostY || pacX == ghost1X && pacY == ghost1Y ||
+		pacX == ghost2X && pacY == ghost2Y || pacX == ghost3X && pacY == ghost3Y)
+	{
+		gameOver = true;
+
+	}
+	return 0;
+
+}
+
+bool level(bool win)
+{
+	if (win == true)
+	{
+		cout << "\n\t You Won \n" << "Press any key to the next level.. " << endl;
+		cin >> key;
+		return true;
+	}
+	else
+	{
+
+		cout << "\n\tGAME OVER\n" << endl;
+		return false;
+	}
+}
+
+bool game(char grid[][COL], int scoree)
+{
+
+	standards();
+	while (!gameOver)
+	{
+		printgrid(grid);
+		logic(grid);
+		if (Score == scoree)
+		{
+			return true;
+		}
+		Sleep(500);
+
+	}
+	system("cls");
+}
+
+int main()
+{
+mainn:
+	system("cls");
+	string name;
+	cout << "\t\t\t\tPAC MAN\n" << endl;
+	cout << "Please Press Any Key To START.." << endl;
+
+	cin >> key;
+	system("cls");
+
+
+	if (game(grid1, 124))
+	{
+
+		if (level(true))
+		{
+
+			if (game(grid2, 208))
+			{
+
+				if (level(true))
+				{
+
+					if (game(grid3, 193))
+					{
+						system("cls");
+						cout << "Congratulations\n YOU WON \n\n Please Enter Your name: " << endl;
+						cin >> name;
+						system("pause");
+						return 0;
+
+					}
+					else
+					{
+						lives--;
+						if (lives > 0)
+						{
+							goto mainn;
+						}
+
+						else
+						{
+							level(false);
+							cout << "Thank You, We Hope You Enjoyed" << endl;
+							system("pause");
+							return 0;
+						}
+					}
+				}
+				else
+				{
+					lives--;
+					if (lives > 0)
+					{
+						goto mainn;
+					}
+
+					else
+					{
+						level(false);
+						cout << "Thank You, We Hope You Enjoyed" << endl;
+						system("pause");
+						return 0;
+					}
+				}
+			}
+			else
+			{
+				lives--;
+				if (lives > 0)
+				{
+					goto mainn;
+				}
+
+				else
+				{
+					level(false);
+					cout << "Thank You, We Hope You Enjoyed" << endl;
+					system("pause");
+					return 0;
+				}
+			}
+		}
+	}
+	else
+	{
+		lives--;
+		if (lives > 0)
+		{
+			goto mainn;
+		}
+
+		else
+		{
+			level(false);
+			cout << "Thank You, We Hope You Enjoyed" << endl;
+			system("pause");
+			return 0;
+		}
+	}
+
+
+	system("pause");
+	return 0;
+}
