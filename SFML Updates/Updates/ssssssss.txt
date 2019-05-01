@@ -1,0 +1,106 @@
+#include <iostream>
+#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
+using namespace sf ;
+using namespace std ;
+float x=0,y=0;
+int dir=0;
+int movement=4 ;
+
+
+int main()
+{
+    RenderWindow window(sf::VideoMode(800, 600), " PacMan!! " ); // open window
+    window.setVerticalSyncEnabled(true); //game will run at the same frequency as the monitor's refresh rate
+    Texture texturePacMan;  // texture = image file
+    texturePacMan.setSmooth(true);
+    texturePacMan.loadFromFile("pacman.jpg") ;
+    Sprite spritePacMan(texturePacMan) ;
+    spritePacMan.setPosition(window.getSize().x/2 , window.getSize().y/2 ) ;
+    spritePacMan.setTextureRect(IntRect(0, 58*2 , 60, 60));
+     //-------------------------------------------
+     string tailmap[31] = {
+"#########################################",
+"#                                       #",
+"# .. ................................ ..#",
+"# ......................................#",
+"#####  . ####### .    . #######  . ######",
+"##     .       #        #        .    ###",
+"##     . ......#        # .....  .    ###",
+"#####  . #### .# .    . # .####  . ######",
+"#             .           .             #",
+"# . . ............................. . . #",
+"# . . ............................. . . #",
+"# . .  ###########################  . . #",
+"# . .  ###########################  . . #",
+"#                                       #",
+"#  . ............................... .  #",
+"#                                       #",
+"# . .  ###########################  . . #",
+"# . .  ###########################  . . #",
+"#                                       #",
+"#  .  .............................  .  #",
+"#  .  .............................  .  #",
+"# . .  .       .          .      .  . . #",
+"#####  .  #### .# .   . # .####  . ######",
+"##     .       .#       # .      .    ###",
+"##     .  ......#       # ...... .    ###",
+"#####  .  ####### .   . #######  . ######",
+"#                                       #",
+"# . . . . . . . . . . . . . . . . . . . #", ///pacman at(18,40)
+"# . . . . . . . . . . . . . . . . . . . #",
+"#                                       #",
+"#########################################"};
+
+
+
+
+	CircleShape dot; //dots
+	dot.setRadius(5);
+	dot.setFillColor(Color::Yellow);
+
+	Texture b;   //walls
+	b.loadFromFile("black.jpg");
+	Sprite ball(b);
+	ball.setTextureRect(IntRect(0, 0, 20, 20));
+
+
+    while (window.isOpen())
+    {
+        Event evnt;
+        while (window.pollEvent(evnt)){
+            if (evnt.type == Event::Closed)
+                window.close();
+            if (evnt.type == Event::KeyPressed && evnt.key.code == Keyboard:: Escape)
+                window.close(); }
+
+                // pacman moving ----------------------
+     if (Keyboard::isKeyPressed(Keyboard::Left)) {  dir=1;    spritePacMan.setTextureRect(IntRect(0, 0 , 75, 75));}
+     if (Keyboard::isKeyPressed(Keyboard::Right)) { dir =2;   spritePacMan.setTextureRect(IntRect(0, 58 , 75, 75));}
+     if (Keyboard::isKeyPressed(Keyboard::Up))   {  dir=3;    spritePacMan.setTextureRect(IntRect(0, 58*2 , 75, 75));}
+     if (Keyboard::isKeyPressed(Keyboard::Down)) {  dir=4;    spritePacMan.setTextureRect(IntRect(0, 58*3 , 75, 75));}
+     spritePacMan.setPosition(x+600,y+300);
+     if(dir==1){  x=x-movement; }
+     if(dir==2){  x=x+movement; }
+     if(dir==3){  y=y-movement; }
+     if(dir==4){  y=y+movement; }
+    window.setFramerateLimit(80);
+
+                //-------------------------------------------------------------
+                //sound effect ---------------
+       //Music gameMusic;
+        //if (!gameMusic.openFromFile("theme.ogg"))
+          // return -1;
+           //gameMusic.play();
+        window.clear();
+          for (int i = 0; i < 31; i++){
+                for (int j = 0; j < 41; j++){
+				if (tailmap[i][j] == '#')
+				{ ball.setPosition(Vector2f(j * 15, i * 15));     window.draw(ball);}
+				else if (tailmap[i][j] == '.'){dot.setPosition(Vector2f(j * 15, i * 15));   window.draw(dot); } } }
+        window.draw(spritePacMan);
+        window.display();
+    }
+
+   return 0 ;
+}

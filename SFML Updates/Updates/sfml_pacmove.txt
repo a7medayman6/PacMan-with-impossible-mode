@@ -1,0 +1,82 @@
+#include <iostream>
+#include <SFML/Graphics.hpp>
+using namespace sf ;
+using namespace std ;
+float x=0,y=0;
+int dir=0;
+int movement=4 ;
+int main()
+{
+
+
+    RenderWindow window(sf::VideoMode(1300, 700), " PacMan!! " ); // open window
+    window.setVerticalSyncEnabled(true); //game will run at the same frequency as the monitor's refresh rate
+    Texture texturePacMan;  // texture = image file
+    texturePacMan.setSmooth(true);
+    texturePacMan.loadFromFile("pacman.png") ;
+    Sprite spritePacMan(texturePacMan) ;
+    //spritePacMan.setPosition(window.getSize().x/2 , window.getSize().y/2 ) ;
+    spritePacMan.setTextureRect(IntRect(0, 58*2 , 75, 75));
+
+
+    while (window.isOpen())
+    {
+        Event evnt;
+        while (window.pollEvent(evnt)){
+            if (evnt.type == Event::Closed)
+                window.close();
+            if (evnt.type == Event::KeyPressed && evnt.key.code == Keyboard:: Escape)
+                window.close(); }
+
+     
+    if (Keyboard::isKeyPressed(Keyboard::Left))
+    {
+        dir=1;
+        spritePacMan.setTextureRect(IntRect(0, 0 , 75, 75));
+
+    }
+     if (Keyboard::isKeyPressed(Keyboard::Right))
+     {
+         dir =2;
+         spritePacMan.setTextureRect(IntRect(0, 58 , 75, 75));
+
+     }
+     if (Keyboard::isKeyPressed(Keyboard::Up))
+     {
+         dir=3;
+          spritePacMan.setTextureRect(IntRect(0, 58*2 , 75, 75));
+
+     }
+     if (Keyboard::isKeyPressed(Keyboard::Down))
+     {
+         dir=4;
+          spritePacMan.setTextureRect(IntRect(0, 58*3 , 75, 75));
+     }
+     spritePacMan.setPosition(x+600,y+300);
+     if(dir==1)
+     {
+         x=x-movement;
+     }
+     if(dir==2)
+     {
+         x=x+movement;
+     }
+     if(dir==3)
+     {
+         y=y-movement;
+     }
+     if(dir==4)
+     {
+         y=y+movement;
+     }
+    window.setFramerateLimit(80);
+
+
+        window.clear();
+        window.draw(spritePacMan);
+        window.display();
+    }
+
+
+   return 0 ;
+}

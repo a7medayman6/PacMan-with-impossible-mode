@@ -1,0 +1,140 @@
+#include <SFML/Graphics.hpp>
+#include <iostream>
+using namespace std;
+using namespace sf;
+int main()
+{
+	int c = 0,clickx,clicky;
+	sf::RenderWindow window(sf::VideoMode(1250, 800), "PACMAN");
+	window.setKeyRepeatEnabled(false);
+
+	sf::Texture texture;
+	sf::Sprite pacmanimage;
+	if (!texture.loadFromFile("Menuu.jpg")) {
+		std::cout << "Error on loading pacman's photo" << std::endl;
+	}
+	pacmanimage.setTexture(texture);
+
+	while (window.isOpen()) {
+		sf::Event event;
+		while (window.pollEvent(event)) {
+			switch (event.type) {
+			case sf::Event::Closed:
+				window.close();
+				break;
+
+			case sf::Event::MouseButtonPressed:
+				std::cout << "Mouse button has been pressed" << std::endl;
+				Vector2i mousepos = Mouse::getPosition(window);
+				//std::cout << (float)mousepos.x << ' ' << (float)mousepos.y << std::endl;
+				clickx = (float)mousepos.x;
+				clicky = (float)mousepos.y;
+				if (clickx >= 47 && clickx <= 380 && clicky >= 75 && clicky <= 230) {
+					std::cout << "Play button has been pressed" << std::endl;
+					//the game will start:
+					RenderWindow win(VideoMode(1250, 800), " PACMAN ");
+					string tailmap[27] = {
+				" ########################################",
+				" #                                      #",
+				" # . ...............  ............... . #",
+				" # . .              ..              . . #",
+				" # . .  ########### .. ###########  . . #",
+				" # . .  ##       ## .. ##       ##  . . #",
+				" # . .  ########### .. ###########  . . #",
+				" # . .              ..              . . #",
+				" # . . . . . . . . .  . . . . . . . . . #",
+				" # . .                              . . #",
+				" # . .  ##########################  . . #",
+				" # . .  ##                      ##  . . #",
+				" # . .  ##                      ##  . . #",
+				" # . .  ##                      ##  . . #",
+				" # . .  ##########################  . . #",
+				" # . .                              . . #",
+				" # . . ............................ . . #",
+				" # . .                              . . #",
+				" # . .  ##### . . . . . . . ######  . . #",
+				" # . .  #   #               #    #  . . #",
+				" # . .  #   #################    #  . . #",
+				" # . .  #                        #  . . #",
+				" # . .  ##########################  . . #",
+				" # . .                              . . #",
+				" # . ................................ . #", ///pacman at(18,40)
+				" #                                      #",
+				" ########################################"
+					};
+
+					CircleShape dot; //dots
+					dot.setRadius(5);
+					dot.setFillColor(Color::Yellow);
+
+					Texture b;   //walls
+					b.loadFromFile("black.jpg");
+					Sprite ball(b);
+					ball.setTextureRect(IntRect(0, 0, 20, 20));
+
+					while (win.isOpen())
+					{
+						Event event;
+						while (win.pollEvent(event))
+						{
+							switch (event.type)
+							{
+							case Event::Closed:
+								win.close();
+								break;
+							}
+						}
+
+						win.clear();
+
+						for (int i = 0; i < 27; i++) //for level 1
+						{
+							for (int j = 0; j < 41; j++)
+							{
+								if (tailmap[i][j] == '#')
+								{
+									ball.setPosition(Vector2f(j * 15, i * 15));
+
+									win.draw(ball);
+									//win.display();
+								}
+								else if (tailmap[i][j] == '.')
+								{
+									dot.setPosition(Vector2f(j * 15, i * 15));
+									win.draw(dot);
+
+									//win.display();
+
+
+								}
+
+							}
+						}
+
+						win.display();
+
+
+					}
+				}
+				else if (clickx >= 52 && clickx <= 385 && clicky >= 268 && clicky <= 424) {
+					std::cout << "Options button has been pressed" << std::endl;
+				}
+				else if (clickx >= 49 && clickx <= 377 && clicky >= 465 && clicky <= 619) {
+					std::cout << "High Scores button has been pressed" << std::endl;
+				}
+				switch (event.key.code) {
+				case sf::Mouse::Left:
+					std::cout << "Left button has been pressed" << std::endl;
+					c++;
+					//std::cout << c << std::endl;
+					break;
+				}
+				break;
+			}
+		}
+
+		window.clear();
+		window.draw(pacmanimage);
+		window.display();
+	}
+}

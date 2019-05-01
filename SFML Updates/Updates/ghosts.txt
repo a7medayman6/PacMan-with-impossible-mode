@@ -1,0 +1,224 @@
+#include <iostream>
+#include "SFML/Graphics.hpp"
+#include "SFML/Audio.hpp"
+#include <string>
+
+using namespace std;
+using namespace sf;
+
+
+int main()
+{
+
+
+    RenderWindow window(VideoMode(650, 450), "PACMAN");
+    window.setVerticalSyncEnabled(true); //game will run at the same frequency as the monitor's refresh rate
+
+    //drawing the maze
+    string tailmap[27] = {
+" ########################################",
+" #                                      #",
+" # . ...............  ............... . #",
+" # . .              ..              . . #",
+" # . .  ########### .. ###########  . . #",
+" # . .  ########### .. ###########  . . #",
+" # . .  ########### .. ###########  . . #",
+" # . .              ..              . . #",
+" # . . . . . . . . .  . . . . . . . . . #",
+" # . .                              . . #",
+" # . .  ##########################  . . #",
+" # . .  ##########################  . . #",
+" # . .  ##########################  . . #",
+" # . .  ##########################  . . #",
+" # . .  ##########################  . . #",
+" # . .                              . . #",
+" # . . ............................ . . #",
+" # . .                              . . #",
+" # . .  ##### . . . . . . . ######  . . #",
+" # . .  ##########################  . . #",
+" # . .  ##########################  . . #",
+" # . .  ##########################  . . #",
+" # . .  ##########################  . . #",
+" # . .                              . . #",
+" # . ................................ . #", ///pacman at(18,40)
+" #                                      #",
+" ########################################"
+	};
+	/*
+	string tailmap2[31]=     //level 2
+	{
+"#########################################",
+"#                                       #",
+"# .. ................................ ..#",
+"# ......................................#",
+"#####  . ####### .    . #######  . ######",
+"##     .       #        #        .    ###",
+"##     . ......#        # .....  .    ###",
+"#####  . #### .# .    . # .####  . ######",
+"#             .           .             #",
+"# . . ............................. . . #",
+"# . . ............................. . . #",
+"# . .  ###########################  . . #",
+"# . .  ###########################  . . #",
+"#                                       #",
+"#  . ............................... .  #",
+"#                                       #",
+"# . .  ###########################  . . #",
+"# . .  ###########################  . . #",
+"#                                       #",
+"#  .  .............................  .  #",
+"#  .  .............................  .  #",
+"# . .  .       .          .      .  . . #",
+"#####  .  #### .# .   . # .####  . ######",
+"##     .       .#       # .      .    ###",
+"##     .  ......#       # ...... .    ###",
+"#####  .  ####### .   . #######  . ######",
+"#                                       #",
+"# . . . . . . . . . . . . . . . . . . . #", ///pacman at(18,40)
+"# . . . . . . . . . . . . . . . . . . . #",
+"#                                       #",
+"#########################################"};*/
+
+    CircleShape dot; //dots
+	dot.setRadius(2);
+	dot.setFillColor(Color::Yellow);
+
+	Texture b;   //walls
+	b.loadFromFile("black.jpg");
+	Sprite ball(b);
+	ball.setTextureRect(IntRect(0, 0, 20, 20));
+
+
+    //drawing pacmann
+    Texture PacManTex;
+    PacManTex.loadFromFile("pacmansheet.png");
+    Sprite PacMan(PacManTex) ;
+    PacMan.setTextureRect(IntRect(16, 0, 16, 16));
+
+    // drawing ghost1
+    Sprite Ghost1;
+    Texture ghost1Tex;
+    ghost1Tex.loadFromFile("pacmansheet.png", sf:: IntRect(0, 64, 18, 17));
+    Ghost1.setTexture(ghost1Tex);
+
+    // drawing ghost2
+    Sprite Ghost2;
+    Texture ghost2Tex;
+    ghost2Tex.loadFromFile("pacmansheet.png", sf:: IntRect(0, 80, 18, 17));
+    Ghost2.setTexture(ghost2Tex);
+
+    // drawing ghost3
+    Sprite Ghost3;
+    Texture ghost3Tex;
+    ghost3Tex.loadFromFile("pacmansheet.png", sf:: IntRect(0, 96, 18, 17));
+    Ghost3.setTexture(ghost3Tex);
+
+    // drawing ghost4
+    Sprite Ghost4;
+    Texture ghost4Tex;
+    ghost4Tex.loadFromFile("pacmansheet.png", sf:: IntRect(0, 112, 18, 17));
+    Ghost4.setTexture(ghost4Tex);
+
+    //their positions
+    Ghost1.setPosition(sf::Vector2f(50.f, 25.f));
+    Ghost2.setPosition(sf::Vector2f(50.f, 30.f));
+    Ghost3.setPosition(sf::Vector2f(50.f, 35.f));
+    Ghost4.setPosition(sf::Vector2f(50.f, 40.f));
+    PacMan.setPosition(Vector2f(300.f,25.f));
+
+
+
+
+
+
+
+
+    while (window.isOpen())
+    {
+        Event event;
+        Event evnt;
+        while (window.pollEvent(event))
+        {
+            if (event.type == Event::Closed)
+                window.close();
+
+        if (evnt.type == Event::KeyPressed && evnt.key.code == Keyboard:: Escape)
+                window.close(); }
+      if (Keyboard::isKeyPressed(Keyboard::Key::Left))  {PacMan.move(-2,0); PacMan.setTextureRect(IntRect(17, 16, 16,16)); }
+      if (Keyboard::isKeyPressed(Keyboard::Key::Right))  {PacMan.move(2,0); PacMan.setTextureRect(IntRect(16, 0, 16, 16)); }
+      if (Keyboard::isKeyPressed(Keyboard::Key::Up))  {PacMan.move(0,-2);  PacMan.setTextureRect(IntRect(17, 32 , 16, 16));}
+      if (Keyboard::isKeyPressed(Keyboard::Key::Down))  {PacMan.move(0,2);  PacMan.setTextureRect(IntRect(17, 48 , 16, 16 ));}
+
+          int randomChoice1 = rand()%4, randomChoice2 = rand()%4;
+          Ghost1.move(0.0f,randomChoice1 );
+          Ghost2.move(randomChoice2 ,0.0f);
+
+
+
+
+
+        window.clear();
+
+        window.draw(Ghost1);
+        window.draw(Ghost2);
+        window.draw(Ghost3);
+        window.draw(Ghost4);
+        window.draw(PacMan);
+
+        for (int i = 0; i < 27; i++) //for level 1
+		{
+			for (int j = 0; j < 41; j++)
+			{
+				if (tailmap[i][j] == '#')
+				{
+					ball.setPosition(Vector2f(j * 15, i * 15));
+
+					window.draw(ball);
+					//win.display();
+				}
+				else if (tailmap[i][j] == '.')
+				{
+					dot.setPosition(Vector2f(j * 15, i * 15));
+					window.draw(dot);
+
+
+					//win.display();
+
+
+				}
+
+			}
+		}
+		/*for (int i = 0; i < 31; i++)  //for level 2
+		{
+			for (int j = 0; j < 41; j++)
+			{
+				if (tailmap2[i][j] == '#')
+				{
+					ball.setPosition(Vector2f(j * 15, i * 15));
+			       //block.setPosition(Vector2f(j * 15, i * 15));
+					win.draw(ball);
+				    //win.display();
+				}
+				 else if (tailmap2[i][j] == '.')
+				{
+					dot.setPosition(Vector2f(j * 15, i * 15));
+			     	win.draw(dot);
+
+					//win.display();
+
+
+				}
+
+			}
+		}
+		*/
+
+        window.display();
+
+
+    }
+
+
+    return 0;
+}
